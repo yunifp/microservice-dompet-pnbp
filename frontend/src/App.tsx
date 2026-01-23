@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import MainLayout from './components/layout/MainLayout';
 import UsersPage from './pages/UsersPage';
 import ProductsPage from './pages/ProductsPage';
+import ShopPage from './pages/ShopPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuthContext();
@@ -21,6 +22,7 @@ function App() {
             <Route path="dashboard" element={<div className="text-2xl font-bold">Ringkasan Data Master & Transaksi</div>} />
             <Route path="users" element={<UsersPage />} />
             <Route path="products" element={<ProductsPage />} />
+            <Route path="shop" element={<ShopPage />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Route>
         </Routes>

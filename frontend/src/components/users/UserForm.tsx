@@ -30,25 +30,25 @@ export const UserForm = ({ user, onSubmit, onClose }: UserFormProps) => {
   }, [user, reset]);
 
   return (
-    <DialogContent className="sm:max-w-[425px]">
+    <DialogContent>
       <DialogHeader>
         <DialogTitle>{user ? 'Edit User' : 'Tambah User Baru'}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Nama Lengkap</Label>
-          <Input id="name" {...register('name')} required />
+          <Label>Nama Lengkap</Label>
+          <Input {...register('name')} required />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" {...register('email')} required />
+          <Label>Email</Label>
+          <Input type="email" {...register('email')} required />
         </div>
         {!user && (
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label>Password</Label>
             <div className="relative">
-              <Input id="password" type={showPassword ? "text" : "password"} {...register('password')} required className="pr-10" />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
+              <Input type={showPassword ? "text" : "password"} {...register('password')} required className="pr-10" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-slate-400">
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
@@ -65,10 +65,7 @@ export const UserForm = ({ user, onSubmit, onClose }: UserFormProps) => {
           </Select>
         </div>
         <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Status Akun</Label>
-            <p className="text-sm text-muted-foreground">Tentukan apakah user ini aktif atau tidak</p>
-          </div>
+          <Label>Status Akun</Label>
           <Controller name="status" control={control} render={({ field }) => (
             <Switch checked={field.value} onCheckedChange={field.onChange} />
           )} />
@@ -76,7 +73,7 @@ export const UserForm = ({ user, onSubmit, onClose }: UserFormProps) => {
       </form>
       <DialogFooter>
         <Button variant="outline" onClick={onClose}>Batal</Button>
-        <Button onClick={handleSubmit(onSubmit)} className="bg-blue-600">{user ? 'Simpan Perubahan' : 'Tambah User'}</Button>
+        <Button onClick={handleSubmit(onSubmit)} className="bg-blue-600">{user ? 'Simpan' : 'Tambah'}</Button>
       </DialogFooter>
     </DialogContent>
   );

@@ -29,8 +29,8 @@ class ProductController {
 
   async update(req, res) {
     try {
-      const product = await productService.updateProduct(req.params.id, req.body);
-      res.status(200).json(product);
+      await productService.updateProduct(req.params.id, req.body);
+      res.status(200).json({ message: 'Product updated' });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -39,7 +39,7 @@ class ProductController {
   async delete(req, res) {
     try {
       await productService.removeProduct(req.params.id);
-      res.status(200).json({ message: 'Product deleted successfully' });
+      res.status(200).json({ message: 'Product deleted' });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

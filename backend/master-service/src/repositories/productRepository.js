@@ -23,8 +23,7 @@ class ProductRepository {
   }
 
   async update(id, data) {
-    await Product.update(data, { where: { id } });
-    return this.findById(id);
+    return await Product.update(data, { where: { id } });
   }
 
   async delete(id) {

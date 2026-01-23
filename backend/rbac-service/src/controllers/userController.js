@@ -6,9 +6,7 @@ class UserController {
       const search = req.query.search || '';
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
-
       const result = await userService.listUsers(search, page, limit);
-      
       res.status(200).json({
         data: result.rows,
         totalItems: result.count,
@@ -22,7 +20,7 @@ class UserController {
 
   async create(req, res) {
     try {
-      const user = await userService.addUser(req.body);
+      const user = await userService.createUser(req.body);
       res.status(201).json(user);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -31,8 +29,8 @@ class UserController {
 
   async update(req, res) {
     try {
-      const user = await userService.updateUser(req.params.id, req.body);
-      res.status(200).json(user);
+      await userService.updateUser(req.params.id, req.body);
+      res.status(200).json({ message: 'User updated' });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -40,10 +38,10 @@ class UserController {
 
   async delete(req, res) {
     try {
-      await userService.removeUser(req.params.id);
-      res.status(200).json({ message: 'User deleted successfully' });
+      await userService.deleteUser(req.params.id);
+      res.status(200).json({ message: 'User deleted' });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(400).json({ message: error.message });
     }
   }
 }
