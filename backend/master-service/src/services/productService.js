@@ -1,8 +1,8 @@
 const productRepository = require('../repositories/productRepository');
 
 class ProductService {
-  async listProducts() {
-    return await productRepository.findAll();
+  async listProducts(search, page, limit) {
+    return await productRepository.findAll(search, page, limit);
   }
 
   async addProduct(data) {

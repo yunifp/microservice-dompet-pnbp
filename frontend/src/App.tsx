@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import LoginPage from './pages/LoginPage';
 import MainLayout from './components/layout/MainLayout';
 import UsersPage from './pages/UsersPage';
+import ProductsPage from './pages/ProductsPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuthContext();
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="dashboard" element={<div className="text-2xl font-bold">Ringkasan Data Master & Transaksi</div>} />
             <Route path="users" element={<UsersPage />} />
+            <Route path="products" element={<ProductsPage />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Route>
         </Routes>

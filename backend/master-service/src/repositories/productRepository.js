@@ -1,8 +1,17 @@
 const Product = require('../models/Product');
+const { Op } = require('sequelize');
 
 class ProductRepository {
-  async findAll() {
-    return await Product.findAll();
+  async findAll(search = '', page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    return await Product.findAndCountAll({
+      where: {
+        name: { [Op.like]: `%${search}%` }
+      },
+      limit: limit,
+      offset: offset,
+      order: [['id', 'DESC']]
+    });
   }
 
   async create(data) {

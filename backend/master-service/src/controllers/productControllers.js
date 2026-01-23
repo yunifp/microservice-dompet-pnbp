@@ -3,8 +3,16 @@ const productService = require('../services/productService');
 class ProductController {
   async getAll(req, res) {
     try {
-      const products = await productService.listProducts();
-      res.status(200).json(products);
+      const search = req.query.search || '';
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const result = await productService.listProducts(search, page, limit);
+      res.status(200).json({
+        data: result.rows,
+        totalItems: result.count,
+        totalPages: Math.ceil(result.count / limit),
+        currentPage: page
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
