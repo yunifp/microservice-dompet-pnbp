@@ -25,15 +25,34 @@ class UserRepository {
     });
   }
 
-  async create(userData) {
-    return await User.create(userData);
+  async create(userData, role) {
+    const user = await User.create(userData);
+    
+    await UserRole.create({
+      user_id: user.id,
+      role: role || 'PEMBELI'
+    });
+    
+    return user;
   }
 
-  async update(id, userData) {
-    return await User.update(userData, { where: { id } });
+  async update(id, userData, role) {
+    const result = await User.update(userData, { where: { id } });
+    
+    if (role) {
+      const existingRole = await UserRole.findOne({ where: { user_id: id } });
+      if (existingRole) {
+        await existingRole.update({ role });
+      } else {
+        await UserRole.create({ user_id: id, role });
+      }
+    }
+    
+    return result;
   }
 
   async delete(id) {
+    await UserRole.destroy({ where: { user_id: id } });
     return await User.destroy({ where: { id } });
   }
 }

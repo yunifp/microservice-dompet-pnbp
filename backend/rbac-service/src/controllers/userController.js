@@ -20,7 +20,7 @@ class UserController {
 
   async create(req, res) {
     try {
-      const user = await userService.createUser(req.body);
+      const user = await userService.addUser(req.body);
       res.status(201).json(user);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -38,7 +38,7 @@ class UserController {
 
   async delete(req, res) {
     try {
-      await userService.deleteUser(req.params.id);
+      await userService.removeUser(req.params.id);
       res.status(200).json({ message: 'User deleted' });
     } catch (error) {
       res.status(400).json({ message: error.message });
