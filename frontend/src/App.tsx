@@ -6,6 +6,7 @@ import MainLayout from './components/layout/MainLayout';
 import UsersPage from './pages/UsersPage';
 import ProductsPage from './pages/ProductsPage';
 import ShopPage from './pages/ShopPage';
+import HistoryPage from './pages/HistoryPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuthContext();
@@ -42,6 +43,7 @@ function App() {
             <Route path="users" element={<RoleRoute allowedRoles={['ADMIN']}><UsersPage /></RoleRoute>} />
             <Route path="products" element={<RoleRoute allowedRoles={['ADMIN']}><ProductsPage /></RoleRoute>} />
             <Route path="shop" element={<RoleRoute allowedRoles={['PEMBELI']}><ShopPage /></RoleRoute>} />
+            <Route path="history" element={<RoleRoute allowedRoles={['PEMBELI']}><HistoryPage /></RoleRoute>} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Route>
         </Routes>

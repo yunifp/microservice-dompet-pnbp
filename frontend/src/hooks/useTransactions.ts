@@ -7,6 +7,7 @@ export const useTransactions = () => {
   const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [cart, setCart] = useState<any>(null);
+  const [history, setHistory] = useState<any[]>([]);
 
   const getCart = async () => {
     if (!user?.id) return;
@@ -16,6 +17,20 @@ export const useTransactions = () => {
       return response.data;
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const getHistory = async () => {
+    if (!user?.id) return;
+    setIsLoading(true);
+    try {
+      const response = await axiosInstance.get(`/transactions/transactions/${user.id}`);
+      setHistory(response.data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal mengambil riwayat transaksi");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,5 +79,5 @@ export const useTransactions = () => {
     }
   };
 
-  return { addToCart, checkout, getCart, cart, isLoading };
+  return { addToCart, checkout, getCart, getHistory, cart, history, isLoading };
 };
