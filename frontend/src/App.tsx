@@ -7,6 +7,7 @@ import UsersPage from './pages/UsersPage';
 import ProductsPage from './pages/ProductsPage';
 import ShopPage from './pages/ShopPage';
 import HistoryPage from './pages/HistoryPage';
+import DashboardPage from './pages/DashboardPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuthContext();
@@ -39,7 +40,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-            <Route path="dashboard" element={<div className="p-8 text-2xl font-bold">Dashboard</div>} />
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<DashboardPage />} />
             <Route path="users" element={<RoleRoute allowedRoles={['ADMIN']}><UsersPage /></RoleRoute>} />
             <Route path="products" element={<RoleRoute allowedRoles={['ADMIN']}><ProductsPage /></RoleRoute>} />
             <Route path="shop" element={<RoleRoute allowedRoles={['PEMBELI']}><ShopPage /></RoleRoute>} />
