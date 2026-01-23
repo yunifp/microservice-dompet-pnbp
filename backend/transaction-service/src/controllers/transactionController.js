@@ -15,7 +15,8 @@ class TransactionController {
 
   async getCart(req, res) {
     try {
-      const result = await transactionService.getCart(req.params.PEMBELI_id);
+      const { PEMBELI_id } = req.params;
+      const result = await transactionService.getCart(PEMBELI_id);
       res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -34,7 +35,8 @@ class TransactionController {
 
   async getHistory(req, res) {
     try {
-      const result = await transactionService.getHistory(req.params.PEMBELI_id);
+      const { PEMBELI_id } = req.params;
+      const result = await transactionService.getHistory(PEMBELI_id);
       res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: error.message });

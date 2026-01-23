@@ -10,19 +10,27 @@ class TransactionService {
           'Authorization': token
         }
       });
-      return response.data.find(p => p.id == productId);
+      
+      const products = response.data.data || [];
+      return products.find(p => p.id == productId);
     } catch (error) {
-      throw new Error('Failed to reach Master Service');
+      throw new Error('Gagal menghubungi Master Service via Gateway');
     }
   }
 
   async addToCart(pembeliId, productId, internalKey, token) {
+    if (!pembeliId) throw new Error('pembeli_id tidak valid');
+    
     const product = await this.fetchProductInfo(productId, internalKey, token);
-    if (!product) throw new Error('Product not found');
+    if (!product) throw new Error('Produk tidak ditemukan atau tidak tersedia');
 
     let transaction = await transactionRepository.findDraftByPembeli(pembeliId);
     if (!transaction) {
-      transaction = await transactionRepository.createTransaction({ pembeli_id: pembeliId });
+      transaction = await transactionRepository.createTransaction({ 
+        pembeli_id: pembeliId,
+        total_harga: 0,
+        status: 'DRAFT'
+      });
     }
 
     await transactionRepository.addItemToCart({
@@ -31,19 +39,27 @@ class TransactionService {
       harga: product.harga
     });
 
-    const newTotal = parseFloat(transaction.total_harga) + parseFloat(product.harga);
+    const currentTotal = parseFloat(transaction.total_harga || 0);
+    const productPrice = parseFloat(product.harga || 0);
+    const newTotal = currentTotal + productPrice;
+
     await transactionRepository.updateTransaction(transaction.id, { total_harga: newTotal });
 
     return transactionRepository.findById(transaction.id);
   }
 
   async getCart(pembeliId) {
+    if (!pembeliId) throw new Error('pembeli_id diperlukan');
     return await transactionRepository.findDraftByPembeli(pembeliId);
   }
 
   async checkout(pembeliId) {
+    if (!pembeliId) throw new Error('pembeli_id tidak terdefinisi');
+    
     const transaction = await transactionRepository.findDraftByPembeli(pembeliId);
-    if (!transaction || !transaction.items.length) throw new Error('Cart is empty');
+    if (!transaction || !transaction.items || transaction.items.length === 0) {
+      throw new Error('Keranjang belanja kosong');
+    }
 
     const kodeBilling = 'SIM-' + Math.floor(Math.random() * 90000000 + 10000000);
     const expiredAt = new Date();
@@ -51,7 +67,8 @@ class TransactionService {
 
     await transactionRepository.updateTransaction(transaction.id, {
       kode_billing: kodeBilling,
-      expired_at: expiredAt
+      expired_at: expiredAt,
+      status: 'BELUM_DIBAYAR'
     });
 
     return await transactionRepository.findById(transaction.id);
