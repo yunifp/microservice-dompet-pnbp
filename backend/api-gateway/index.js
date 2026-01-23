@@ -1,6 +1,7 @@
 const express = require('express');
 const proxy = require('express-http-proxy');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swaggerConfig');
 const { authMiddleware, rbacMiddleware } = require('./middleware');
@@ -9,6 +10,8 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
+
+app.use(cors());
 
 const addInternalHeader = (proxyReqOpts) => {
   proxyReqOpts.headers['X-INTERNAL-KEY'] = process.env.GATEWAY_SECRET;
