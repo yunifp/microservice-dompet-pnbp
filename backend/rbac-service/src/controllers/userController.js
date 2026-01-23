@@ -3,8 +3,18 @@ const userService = require('../services/userService');
 class UserController {
   async getAll(req, res) {
     try {
-      const users = await userService.listUsers();
-      res.status(200).json(users);
+      const search = req.query.search || '';
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+
+      const result = await userService.listUsers(search, page, limit);
+      
+      res.status(200).json({
+        data: result.rows,
+        totalItems: result.count,
+        totalPages: Math.ceil(result.count / limit),
+        currentPage: page
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

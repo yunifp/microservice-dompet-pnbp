@@ -1,10 +1,23 @@
 const { User, UserRole } = require('../models/Associations');
+const { Op } = require('sequelize');
 
 class UserRepository {
-  async findAll() {
-    return await User.findAll({
+  async findAll(search = '', page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    
+    return await User.findAndCountAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } }
+        ]
+      },
       attributes: ['id', 'name', 'email', 'status', 'created_at'],
-      include: [{ model: UserRole, as: 'roleData', attributes: ['role'] }]
+      include: [{ model: UserRole, as: 'roleData', attributes: ['role'] }],
+      limit: limit,
+      offset: offset,
+      distinct: true,
+      order: [['created_at', 'DESC']]
     });
   }
 

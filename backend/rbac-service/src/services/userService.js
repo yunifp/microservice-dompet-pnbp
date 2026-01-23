@@ -2,10 +2,9 @@ const bcrypt = require('bcrypt');
 const userRepository = require('../repositories/userRepository');
 
 class UserService {
-  async listUsers() {
-    return await userRepository.findAll();
+  async listUsers(search, page, limit) {
+    return await userRepository.findAll(search, page, limit);
   }
-
   async addUser(data) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const userData = {
