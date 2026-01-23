@@ -39,6 +39,14 @@ class AuthController {
       return res.status(401).json({ message: error.message });
     }
   }
+
+  async logout(req, res) {
+    try {
+      return res.status(200).json({ message: 'Logout successful' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error during logout' });
+    }
+  }
 }
 
 module.exports = new AuthController();
