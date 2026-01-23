@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '@/api/axiosInstance';
-import { useAuthContext } from '@/context/AuthContext'; 
+import { useAuthContext } from '@/context/AuthContext';
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login: contextLogin, logout: contextLogout } = useAuthContext(); // Ambil fungsi dari context
+  const { login: contextLogin, logout: contextLogout } = useAuthContext();
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -18,9 +18,10 @@ export const useAuth = () => {
       const token = response.data.token || response.data.data?.token;
 
       if (!token) {
-        throw new Error("Gagal mendapatkan token akses dari server");
+        throw new Error("Token tidak ditemukan dalam respon server");
       }
-      contextLogin(token); 
+
+      contextLogin(token);
       
       navigate('/dashboard');
     } catch (err: any) {
@@ -32,7 +33,7 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    contextLogout(); 
+    contextLogout();
     navigate('/login');
   };
 

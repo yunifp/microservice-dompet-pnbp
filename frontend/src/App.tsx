@@ -8,7 +8,12 @@ import ProductsPage from './pages/ProductsPage';
 import ShopPage from './pages/ShopPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, isLoading } = useAuthContext();
+
+  if (isLoading) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  }
+
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 };
 
@@ -19,7 +24,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-            <Route path="dashboard" element={<div className="text-2xl font-bold">Ringkasan Data Master & Transaksi</div>} />
+            <Route path="dashboard" element={<div className="p-8 text-2xl font-bold">Dashboard</div>} />
             <Route path="users" element={<UsersPage />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="shop" element={<ShopPage />} />

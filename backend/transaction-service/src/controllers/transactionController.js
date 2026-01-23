@@ -4,18 +4,16 @@ class TransactionController {
   async addToCart(req, res) {
     try {
       const { pembeli_id, produk_id } = req.body;
-      
-      if (!pembeli_id) {
-        return res.status(400).json({ message: "Parameter pembeli_id (pembeli_id) tidak ditemukan" });
-      }
-
       const internalKey = req.headers['x-internal-key'];
       const token = req.headers['authorization'];
+
+      if (!pembeli_id) {
+        return res.status(400).json({ message: "ID Pembeli tidak valid" });
+      }
 
       const result = await transactionService.addToCart(pembeli_id, produk_id, internalKey, token);
       res.status(201).json(result);
     } catch (error) {
-      console.error(error);
       res.status(400).json({ message: error.message });
     }
   }
@@ -32,11 +30,6 @@ class TransactionController {
   async checkout(req, res) {
     try {
       const { pembeli_id } = req.body;
-      
-      if (!pembeli_id) {
-        return res.status(400).json({ message: "Parameter pembeli_id wajib diisi" });
-      }
-
       const result = await transactionService.checkout(pembeli_id);
       res.status(200).json(result);
     } catch (error) {

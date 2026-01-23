@@ -13,29 +13,59 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded: any = jwtDecode(token);
-        setUser({ id: decoded.id, email: decoded.email, role: decoded.role, name: decoded.name });
-      } catch (e) {
-        localStorage.removeItem('token');
+    const initializeAuth = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decoded: any = jwtDecode(token);
+          const currentTime = Date.now() / 1000;
+          
+          if (decoded.exp && decoded.exp < currentTime) {
+            localStorage.removeItem('token');
+            setUser(null);
+          } else {
+            setUser({
+              id: decoded.id,
+              email: decoded.email,
+              role: decoded.role,
+              name: decoded.name
+            });
+          }
+        } catch (error) {
+          console.error("Token invalid:", error);
+          localStorage.removeItem('token');
+          setUser(null);
+        }
       }
-    }
+      setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = (token: string) => {
     localStorage.setItem('token', token);
-    const decoded: any = jwtDecode(token);
-    setUser({ id: decoded.id, email: decoded.email, role: decoded.role, name: decoded.name });
+    try {
+      const decoded: any = jwtDecode(token);
+      setUser({
+        id: decoded.id,
+        email: decoded.email,
+        role: decoded.role,
+        name: decoded.name
+      });
+    } catch (error) {
+      console.error("Gagal decode token saat login:", error);
+    }
   };
 
   const logout = () => {
@@ -44,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

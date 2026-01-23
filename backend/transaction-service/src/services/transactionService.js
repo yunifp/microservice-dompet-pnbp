@@ -5,25 +5,26 @@ class TransactionService {
   async fetchProductInfo(productId, internalKey, token) {
     try {
       const gatewayUrl = process.env.GATEWAY_URL || 'http://localhost:3000/api';
-      const response = await axios.get(`${gatewayUrl}/products`, {
+      const response = await axios.get(`${gatewayUrl}/products/products`, {
         headers: { 
           'X-INTERNAL-KEY': internalKey,
           'Authorization': token
         },
-        params: {
-          search: '', 
+        params: { 
           page: 1, 
-          limit: 100 
+          limit: 1000 
         }
       });
       
-      const products = response.data.data || [];
-      const product = products.find(p => p.id == productId);
+      const products = response.data.data || response.data;
       
-      if (!product) return null;
+      if (!Array.isArray(products)) {
+        return null;
+      }
+
+      const product = products.find(p => p.id == productId);
       return product;
     } catch (error) {
-      console.error('Error fetching product from Gateway:', error.message);
       throw new Error('Gagal mengambil data produk dari Master Service via Gateway');
     }
   }
@@ -53,8 +54,8 @@ class TransactionService {
       harga: product.harga
     });
 
-    const currentTotal = parseFloat(transaction.total_harga) || 0;
-    const itemPrice = parseFloat(product.harga) || 0;
+    const currentTotal = Number(transaction.total_harga) || 0;
+    const itemPrice = Number(product.harga) || 0;
     const newTotal = currentTotal + itemPrice;
 
     await transactionRepository.updateTransaction(transaction.id, { total_harga: newTotal });
@@ -67,7 +68,7 @@ class TransactionService {
   }
 
   async checkout(pembeliId) {
-    if (!pembeliId) throw new Error('Pembeli ID wajib diisi untuk checkout');
+    if (!pembeliId) throw new Error('Pembeli ID wajib diisi');
 
     const transaction = await transactionRepository.findDraftByPembeli(pembeliId);
     

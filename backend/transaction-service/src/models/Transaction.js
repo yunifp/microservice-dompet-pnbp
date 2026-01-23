@@ -21,8 +21,8 @@ const Transaction = sequelize.define('Transaction', {
     defaultValue: 0
   },
   status: {
-    type: DataTypes.ENUM('BELUM_DIBAYAR', 'SUDAH_DIBAYAR'),
-    defaultValue: 'BELUM_DIBAYAR'
+    type: DataTypes.ENUM('DRAFT', 'BELUM_DIBAYAR', 'SUDAH_DIBAYAR'),
+    defaultValue: 'DRAFT'
   },
   expired_at: {
     type: DataTypes.DATE,
