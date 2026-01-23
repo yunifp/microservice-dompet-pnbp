@@ -5,7 +5,7 @@ class TransactionService {
   async fetchProductInfo(productId, internalKey, token) {
     try {
       const gatewayUrl = process.env.GATEWAY_URL || 'http://localhost:3000/api';
-      const response = await axios.get(`${gatewayUrl}/products/products`, {
+      const response = await axios.get(`${gatewayUrl}/products`, {
         headers: { 
           'X-INTERNAL-KEY': internalKey,
           'Authorization': token

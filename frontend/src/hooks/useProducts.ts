@@ -17,7 +17,7 @@ export const useProducts = () => {
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axiosInstance.get(`/products/products?search=${search}&page=${page}&limit=10`);
+      const response = await axiosInstance.get(`/products?search=${search}&page=${page}&limit=10`);
       setProducts(response.data.data);
       setMeta({
         totalPages: response.data.totalPages,
@@ -37,17 +37,17 @@ export const useProducts = () => {
   }, [fetchProducts]);
 
   const addProduct = async (data: any) => {
-    await axiosInstance.post('/products/products', data);
+    await axiosInstance.post('/products', data);
     fetchProducts();
   };
 
   const updateProduct = async (id: number, data: any) => {
-    await axiosInstance.put(`/products/products/${id}`, data);
+    await axiosInstance.put(`/products/${id}`, data);
     fetchProducts();
   };
 
   const deleteProduct = async (id: number) => {
-    await axiosInstance.delete(`/products/products/${id}`);
+    await axiosInstance.delete(`/products/${id}`);
     fetchProducts();
   };
 

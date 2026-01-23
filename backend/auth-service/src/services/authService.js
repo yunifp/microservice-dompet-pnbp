@@ -17,9 +17,12 @@ class AuthService {
       throw new Error('Invalid credentials');
     }
 
+   
     const payload = {
-      user_id: user.id,
+      id: user.id,       
+      user_id: user.id,  
       email: user.email,
+      name: user.name,   
       role: user.roleData.role
     };
 
@@ -33,6 +36,31 @@ class AuthService {
       throw new Error('User not found');
     }
     return user;
+  }
+
+  async refreshToken(token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
+      
+      const user = await userRepository.findById(decoded.user_id || decoded.id); 
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+     
+      const payload = {
+        id: user.id,
+        user_id: user.id,
+        email: user.email,
+        name: user.name, 
+        role: user.roleData.role
+      };
+
+      const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+      return { token: newToken };
+    } catch (error) {
+      throw new Error('Invalid or expired token');
+    }
   }
 }
 

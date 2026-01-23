@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
 
 interface User {
   id: number;
@@ -24,14 +25,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const initializeAuth = () => {
-      const token = localStorage.getItem('token');
+      const token = Cookies.get('token');
+      
       if (token) {
         try {
           const decoded: any = jwtDecode(token);
           const currentTime = Date.now() / 1000;
           
           if (decoded.exp && decoded.exp < currentTime) {
-            localStorage.removeItem('token');
+            Cookies.remove('token');
             setUser(null);
           } else {
             setUser({
@@ -43,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         } catch (error) {
           console.error("Token invalid:", error);
-          localStorage.removeItem('token');
+          Cookies.remove('token');
           setUser(null);
         }
       }
@@ -54,7 +56,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = (token: string) => {
-    localStorage.setItem('token', token);
+    Cookies.set('token', token, { expires: 1, secure: true, sameSite: 'Strict' });
+    
     try {
       const decoded: any = jwtDecode(token);
       setUser({
@@ -69,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    Cookies.remove('token');
     setUser(null);
   };
 

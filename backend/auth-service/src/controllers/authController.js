@@ -25,6 +25,20 @@ class AuthController {
       return res.status(403).json({ message: 'Invalid token' });
     }
   }
+
+  async refreshToken(req, res) {
+    try {
+      const { token } = req.body;
+      if (!token) {
+        return res.status(400).json({ message: 'Token is required' });
+      }
+
+      const result = await authService.refreshToken(token);
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(401).json({ message: error.message });
+    }
+  }
 }
 
 module.exports = new AuthController();

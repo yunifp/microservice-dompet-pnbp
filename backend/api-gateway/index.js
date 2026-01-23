@@ -34,7 +34,10 @@ app.use('/api/products', (req, res, next) => {
   }
   return authMiddleware(req, res, () => rbacMiddleware('ADMIN')(req, res, next));
 }, proxy(process.env.MASTER_SERVICE_URL, {
-  proxyReqOptDecorator: addInternalHeader
+  proxyReqOptDecorator: addInternalHeader,
+  proxyReqPathResolver: (req) => {
+    return '/products' + require('url').parse(req.url).path;
+  }
 }));
 
 app.use('/api/transactions', authMiddleware, proxy(process.env.TRANSACTION_SERVICE_URL, {
