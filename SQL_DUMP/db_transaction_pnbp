@@ -1,0 +1,77 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               8.4.3 - MySQL Community Server - GPL
+-- Server OS:                    Win64
+-- HeidiSQL Version:             12.8.0.6908
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+-- Dumping database structure for db_transaction_pnbp
+DROP DATABASE IF EXISTS `db_transaction_pnbp`;
+CREATE DATABASE IF NOT EXISTS `db_transaction_pnbp` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `db_transaction_pnbp`;
+
+-- Dumping structure for table db_transaction_pnbp.keranjang
+DROP TABLE IF EXISTS `keranjang`;
+CREATE TABLE IF NOT EXISTS `keranjang` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `transaksi_id` bigint NOT NULL,
+  `produk_id` bigint NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `harga` decimal(15,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `transaksi_id` (`transaksi_id`),
+  CONSTRAINT `keranjang_ibfk_1` FOREIGN KEY (`transaksi_id`) REFERENCES `transaksi` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table db_transaction_pnbp.keranjang: ~2 rows (approximately)
+DELETE FROM `keranjang`;
+INSERT INTO `keranjang` (`id`, `transaksi_id`, `produk_id`, `quantity`, `harga`) VALUES
+	(1, 6, 5, 1, 100000.00),
+	(2, 6, 4, 14, 3000.00),
+	(3, 7, 4, 1, 3000.00),
+	(4, 8, 4, 2, 3000.00),
+	(5, 9, 5, 3, 100000.00),
+	(6, 9, 3, 1, 10000.00);
+
+-- Dumping structure for table db_transaction_pnbp.transaksi
+DROP TABLE IF EXISTS `transaksi`;
+CREATE TABLE IF NOT EXISTS `transaksi` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `kode_billing` varchar(255) DEFAULT NULL,
+  `pembeli_id` bigint NOT NULL,
+  `total_harga` decimal(15,2) DEFAULT '0.00',
+  `status` enum('DRAFT','BELUM_DIBAYAR','SUDAH_DIBAYAR') DEFAULT 'DRAFT',
+  `expired_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `kode_billing` (`kode_billing`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table db_transaction_pnbp.transaksi: ~6 rows (approximately)
+DELETE FROM `transaksi`;
+INSERT INTO `transaksi` (`id`, `kode_billing`, `pembeli_id`, `total_harga`, `status`, `expired_at`, `created_at`) VALUES
+	(1, 'BILL-1769156832759547', 2, 5000.00, 'SUDAH_DIBAYAR', '2026-01-24 08:27:12', '2026-01-23 08:26:40'),
+	(2, 'BILL-1769156902800792', 2, 12000.00, 'SUDAH_DIBAYAR', '2026-01-24 08:28:22', '2026-01-23 08:28:15'),
+	(3, 'BILL-1769159019549976', 2, 24000.00, 'SUDAH_DIBAYAR', '2026-01-24 09:03:39', '2026-01-23 08:58:12'),
+	(4, 'BILL-1769159576812909', 2, 12000.00, 'SUDAH_DIBAYAR', '2026-01-24 09:12:56', '2026-01-23 09:12:55'),
+	(5, 'BILL-1769159736220849', 2, 12000.00, 'SUDAH_DIBAYAR', '2026-01-24 09:15:36', '2026-01-23 09:15:30'),
+	(6, 'BILL-1769165262203618', 2, 142000.00, 'SUDAH_DIBAYAR', '2026-01-24 10:47:42', '2026-01-23 10:47:15'),
+	(7, 'BILL-1769167130566388', 2, 3000.00, 'BELUM_DIBAYAR', '2026-01-24 11:18:50', '2026-01-23 11:18:48'),
+	(8, 'BILL-1769171741058620', 2, 6000.00, 'BELUM_DIBAYAR', '2026-01-24 12:35:41', '2026-01-23 12:32:34'),
+	(9, NULL, 2, 310000.00, 'DRAFT', NULL, '2026-01-23 12:35:53');
+
+/*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
