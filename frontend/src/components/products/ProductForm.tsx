@@ -20,6 +20,8 @@ export const ProductForm = ({ product, onSubmit, onClose }: ProductFormProps) =>
   useEffect(() => {
     if (product) {
       reset({ name: product.name, harga: product.harga });
+    } else {
+      reset({ name: '', harga: 0 });
     }
   }, [product, reset]);
 
