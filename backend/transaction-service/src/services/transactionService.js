@@ -4,30 +4,44 @@ const transactionRepository = require('../repositories/transactionReponsitory');
 class TransactionService {
   async fetchProductInfo(productId, internalKey, token) {
     try {
-      const response = await axios.get(`${process.env.GATEWAY_URL}/products/products`, {
+      const gatewayUrl = process.env.GATEWAY_URL || 'http://localhost:3000/api';
+      const response = await axios.get(`${gatewayUrl}/products`, {
         headers: { 
           'X-INTERNAL-KEY': internalKey,
           'Authorization': token
+        },
+        params: {
+          search: '', 
+          page: 1, 
+          limit: 100 
         }
       });
       
       const products = response.data.data || [];
-      return products.find(p => p.id == productId);
+      const product = products.find(p => p.id == productId);
+      
+      if (!product) return null;
+      return product;
     } catch (error) {
-      throw new Error('Gagal menghubungi Master Service via Gateway');
+      console.error('Error fetching product from Gateway:', error.message);
+      throw new Error('Gagal mengambil data produk dari Master Service via Gateway');
     }
   }
 
   async addToCart(pembeliId, productId, internalKey, token) {
-    if (!pembeliId) throw new Error('pembeli_id tidak valid');
-    
+    if (!pembeliId) throw new Error('Pembeli ID wajib diisi');
+
     const product = await this.fetchProductInfo(productId, internalKey, token);
-    if (!product) throw new Error('Produk tidak ditemukan atau tidak tersedia');
+    
+    if (!product) {
+      throw new Error('Produk tidak ditemukan atau tidak tersedia');
+    }
 
     let transaction = await transactionRepository.findDraftByPembeli(pembeliId);
+    
     if (!transaction) {
       transaction = await transactionRepository.createTransaction({ 
-        pembeli_id: pembeliId,
+        pembeli_id: pembeliId, 
         total_harga: 0,
         status: 'DRAFT'
       });
@@ -39,29 +53,29 @@ class TransactionService {
       harga: product.harga
     });
 
-    const currentTotal = parseFloat(transaction.total_harga || 0);
-    const productPrice = parseFloat(product.harga || 0);
-    const newTotal = currentTotal + productPrice;
+    const currentTotal = parseFloat(transaction.total_harga) || 0;
+    const itemPrice = parseFloat(product.harga) || 0;
+    const newTotal = currentTotal + itemPrice;
 
     await transactionRepository.updateTransaction(transaction.id, { total_harga: newTotal });
 
-    return transactionRepository.findById(transaction.id);
+    return await transactionRepository.findById(transaction.id);
   }
 
   async getCart(pembeliId) {
-    if (!pembeliId) throw new Error('pembeli_id diperlukan');
     return await transactionRepository.findDraftByPembeli(pembeliId);
   }
 
   async checkout(pembeliId) {
-    if (!pembeliId) throw new Error('pembeli_id tidak terdefinisi');
-    
+    if (!pembeliId) throw new Error('Pembeli ID wajib diisi untuk checkout');
+
     const transaction = await transactionRepository.findDraftByPembeli(pembeliId);
+    
     if (!transaction || !transaction.items || transaction.items.length === 0) {
       throw new Error('Keranjang belanja kosong');
     }
 
-    const kodeBilling = 'SIM-' + Math.floor(Math.random() * 90000000 + 10000000);
+    const kodeBilling = 'BILL-' + Date.now() + Math.floor(Math.random() * 1000);
     const expiredAt = new Date();
     expiredAt.setHours(expiredAt.getHours() + 24);
 
