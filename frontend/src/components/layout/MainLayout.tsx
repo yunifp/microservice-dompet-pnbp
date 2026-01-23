@@ -1,7 +1,5 @@
-import React from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
-import { Button } from '@/components/ui/button';
 import { LayoutDashboard, Users, Package, ShoppingCart, History, LogOut, Menu } from 'lucide-react';
 
 const MainLayout = () => {

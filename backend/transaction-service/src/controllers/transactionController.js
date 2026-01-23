@@ -3,7 +3,7 @@ const transactionService = require('../services/transactionService');
 class TransactionController {
   async addToCart(req, res) {
     try {
-      const { pembeli_id, produk_id } = req.body;
+      const { pembeli_id, produk_id, quantity } = req.body;
       const internalKey = req.headers['x-internal-key'];
       const token = req.headers['authorization'];
 
@@ -11,7 +11,7 @@ class TransactionController {
         return res.status(400).json({ message: "ID Pembeli tidak valid" });
       }
 
-      const result = await transactionService.addToCart(pembeli_id, produk_id, internalKey, token);
+      const result = await transactionService.addToCart(pembeli_id, produk_id, quantity, internalKey, token);
       res.status(201).json(result);
     } catch (error) {
       res.status(400).json({ message: error.message });

@@ -29,6 +29,12 @@ export const UserForm = ({ user, onSubmit, onClose }: UserFormProps) => {
     }
   }, [user, reset]);
 
+  const handleClose = () => {
+    reset({ name: '', email: '', password: '', role: 'PEMBELI', status: true });
+    setShowPassword(false);
+    onClose();
+  };
+
   return (
     <DialogContent>
       <DialogHeader>
@@ -72,7 +78,7 @@ export const UserForm = ({ user, onSubmit, onClose }: UserFormProps) => {
         </div>
       </form>
       <DialogFooter>
-        <Button variant="outline" onClick={onClose}>Batal</Button>
+        <Button variant="outline" onClick={handleClose}>Batal</Button>
         <Button onClick={handleSubmit(onSubmit)} className="bg-blue-600">{user ? 'Simpan' : 'Tambah'}</Button>
       </DialogFooter>
     </DialogContent>

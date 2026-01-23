@@ -6,8 +6,20 @@ import { toast } from 'sonner';
 export const useTransactions = () => {
   const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
+  const [cart, setCart] = useState<any>(null);
 
-  const addToCart = async (produk_id: number) => {
+  const getCart = async () => {
+    if (!user?.id) return;
+    try {
+      const response = await axiosInstance.get(`/transactions/cart/${user.id}`);
+      setCart(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addToCart = async (produk_id: number, quantity: number) => {
     if (!user || !user.id) {
       toast.error('Sesi user tidak valid. Silakan login ulang.');
       return;
@@ -17,9 +29,11 @@ export const useTransactions = () => {
     try {
       await axiosInstance.post('/transactions/cart/add', {
         pembeli_id: user.id,
-        produk_id: produk_id
+        produk_id: produk_id,
+        quantity: quantity
       });
       toast.success('Produk berhasil ditambahkan ke keranjang');
+      await getCart();
     } catch (error: any) {
       console.error(error);
       toast.error(error.response?.data?.message || 'Gagal menambahkan produk');
@@ -40,6 +54,7 @@ export const useTransactions = () => {
         pembeli_id: user.id
       });
       toast.success('Checkout Berhasil! Kode Billing diterbitkan.');
+      setCart(null);
       return response.data;
     } catch (error: any) {
       console.error(error);
@@ -49,5 +64,5 @@ export const useTransactions = () => {
     }
   };
 
-  return { addToCart, checkout, isLoading };
+  return { addToCart, checkout, getCart, cart, isLoading };
 };

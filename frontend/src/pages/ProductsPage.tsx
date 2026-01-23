@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useProducts, ProductData } from '@/hooks/useProducts';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';

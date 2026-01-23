@@ -29,8 +29,11 @@ class TransactionService {
     }
   }
 
-  async addToCart(pembeliId, productId, internalKey, token) {
+  async addToCart(pembeliId, productId, quantity = 1, internalKey, token) {
     if (!pembeliId) throw new Error('Pembeli ID wajib diisi');
+    
+    const qty = parseInt(quantity) || 1;
+    if (qty < 1) throw new Error('Quantity minimal 1');
 
     const product = await this.fetchProductInfo(productId, internalKey, token);
     
@@ -48,15 +51,18 @@ class TransactionService {
       });
     }
 
+    const itemPrice = Number(product.harga) || 0;
+    const subTotal = itemPrice * qty;
+
     await transactionRepository.addItemToCart({
       transaksi_id: transaction.id,
       produk_id: productId,
-      harga: product.harga
+      quantity: qty,
+      harga: itemPrice
     });
 
     const currentTotal = Number(transaction.total_harga) || 0;
-    const itemPrice = Number(product.harga) || 0;
-    const newTotal = currentTotal + itemPrice;
+    const newTotal = currentTotal + subTotal;
 
     await transactionRepository.updateTransaction(transaction.id, { total_harga: newTotal });
 
